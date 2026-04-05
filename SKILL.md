@@ -1,6 +1,6 @@
 ---
 name: web-search
-description: Search the web using Tavily API. Use when the user asks about current events, latest news, prices, weather, or anything that requires up-to-date information from the internet.
+description: Search the internet for current information using Tavily API. Use when user asks about news, prices, weather, events, or anything requiring up-to-date information.
 metadata:
   require-secret: true
   require-secret-description: "Enter your Tavily API key. Get a free one (1000 searches/month) at https://tavily.com"
@@ -10,10 +10,7 @@ metadata:
 
 ## Instructions
 
-When the user asks a question that requires current/real-time information from the internet, call the `run_js` tool with the following exact parameters:
-- script name: index.html
-- data: A JSON string with the following fields:
-  - query: String. The search query based on the user's question.
-  - maxResults: Number (optional). Maximum number of results to return. Default 5.
+Call the `run_js` tool using `index.html` and a JSON string for `data` with the following fields:
+- **query**: Required. The search query based on the user's question. Extract the key search terms.
 
-After receiving the search results, use them to provide a comprehensive answer to the user's question. Cite sources when relevant.
+After receiving the search results, use them to answer the user's question. Cite sources when relevant. Your response MUST BE in the SAME language as the user's original prompt.
