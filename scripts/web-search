@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head></head>
+<body>
+<script>
+window['ai_edge_gallery_get_result'] = async (data, secret) => {
+  try {
+    // Debug: log what we received
+    const debugInfo = {
+      hasData: !!data,
+      hasSecret: !!secret,
+      secretLen: secret ? secret.length : 0,
+      dataPreview: data ? data.substring(0, 200) : 'null'
+    };
+
+    let query = "test";
+    let maxResults = 5;
+
+    try {
+      const params = JSON.parse(data);
+      query = params.query || params.text || params.search || "test";
+      maxResults = params.maxResults || params.max_results || 5;
+    } catch (parseErr) {
+      // If data isn't valid JSON, use it as the query directly
+      if (data && typeof data === 'string' && data.length > 0) {
+        query = data;
+      }
+    }
+
+    if (!secret || secret.trim().length === 0) {
+      return JSON.stringify({
+        error: `Tavily API key is missing. Debug: ${JSON.stringify(debugInfo)}`
+      });
+    }
+
+    const apiKey = secret.trim();
+    
+    const response = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query: query,
+        max_results: maxResults,
+        include_answer: true,
+        search_depth: "basic"
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      return JSON.stringify({
+        error: `HTTP ${response.status}: ${errText.substring(0, 500)}`
+      });
+    }
+
+    const respData = await response.json();
+
+    // Format results for the LLM
+    let resultText = "";
+
+    if (respData.answer) {
+      resultText += `**Summary:** ${respData.answer}\n\n`;
+    }
+
+    resultText += `**Search Results for "${query}":**\n\n`;
+
+    if (respData.results && respData.results.length > 0) {
+      respData.results.forEach((r, i) => {
+        resultText += `${i + 1}. **${r.title}**\n`;
+        resultText += `   ${r.url}\n`;
+        if (r.content) {
+          const snippet = r.content.length > 300 
+            ? r.content.substring(0, 300) + "..." 
+            : r.content;
+          resultText += `   ${snippet}\n`;
+        }
+        resultText += "\n";
+      });
+    } else {
+      resultText += "No results found.\n";
+    }
+
+    return JSON.stringify({ result: resultText });
+
+  } catch (e) {
+    return JSON.stringify({
+      error: `Exception: ${e.message} | Stack: ${e.stack ? e.stack.substring(0, 300) : 'none'}`
+    });
+  }
+};
+</script>
+</body>
+</html>
