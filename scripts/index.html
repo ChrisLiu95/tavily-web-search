@@ -62,10 +62,7 @@ window['ai_edge_gallery_get_result'] = async (data, secret) => {
         resultText += `[${i + 1}] ${r.title}\n`;
         resultText += `Source: ${r.url}\n`;
         if (r.content) {
-          const snippet = r.content.length > 600
-            ? r.content.substring(0, 600) + "..."
-            : r.content;
-          resultText += `Summary: ${snippet}\n`;
+          resultText += `Summary: ${r.content}\n`;
         }
         resultText += "\n";
       });
