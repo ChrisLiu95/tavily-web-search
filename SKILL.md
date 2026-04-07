@@ -8,9 +8,19 @@ metadata:
 
 # Web Search
 
+Search the live internet for up-to-date information, news, or facts.
+
+## Examples
+
+* "What is Tesla stock price today?"
+* "Latest news about AI"
+* "Weather in Tokyo"
+
 ## Instructions
 
-Call the `run_js` tool using `index.html` and a JSON string for `data` with the following fields:
-- **query**: Required. The search query based on the user's question. Extract the key search terms.
+You MUST use the `run_js` tool with the following exact parameters:
 
-After receiving the search results, use them to answer the user's question. Cite sources when relevant. Your response MUST BE in the SAME language as the user's original prompt.
+- data: A JSON string with the following fields:
+  - query: String. The search query based on the user's question.
+
+After receiving the search results, summarize them to answer the user's question. Always mention the source URLs in your response.
