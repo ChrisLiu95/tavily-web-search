@@ -1,5 +1,5 @@
 ---
-name: web-search
+name: tavily-web-search
 description: Fetches live search results from the internet via Tavily API and returns them as text.
 metadata:
   require-secret: true
